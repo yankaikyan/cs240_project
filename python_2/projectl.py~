@@ -1,0 +1,154 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from stop_words import safe_get_stop_words
+from stop_words import get_stop_words
+from sys import argv
+import math
+import glob
+
+Tresh = 5
+#define documents class
+class Doc:
+	def __init__(self, name, one_norm, tf_idf):
+		self.name = name
+		self.one_norm = one_norm
+		self.tf_idf = tf_idf
+	def __lt__(self, other):
+		return self.one_norm < other.one_norm
+		
+#define group class
+class Group:
+	def __init__(self, file_list):
+		self.file_list = file_list	
+	def setSubgroup(self, subgroup):
+		self.subgroup = subgroup
+	def setMaxWeight(self, maxweight):
+		self.maxweight = maxweight
+
+#read in documents
+text_files = []
+for filename in glob.glob(r'E:\python\*.html'):
+	text_files.append(filename)
+	print (filename)
+documents = [open(f, encoding="utf8").read() for f in text_files]
+print (text_files)
+
+#set stop_words
+stop_words_1 = safe_get_stop_words('unsupported language') + get_stop_words('en') + get_stop_words('english') + ['DOCTYPE', 'html', 'PUBLIC', 'head', 'meta', 'http', 'content', 'link', 'rel', 'href', 'title', 'style', 'type', 'import', 'media', 'script', 'javascript', 'src', 'body', 'div', 'class', 'id', 'name', 'a', 'h3', 'h1', 'h2', 'table', 'tr', 'td', 'p', 'small', 'span', 'b', 'font', 'li', 'articles', 'wikipedia', 'text', 'css', 'org', 'th', 'skins', 'width', 'en', 'wiki', r'\d+\w+']
+tfidf_vectorizer = TfidfVectorizer(stop_words=stop_words_1)
+
+
+#get tf_idf matrix and transform to 2D list
+tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+#print (tfidf_vectorizer.vocabulary_)
+a = tfidf_matrix.todense().tolist()
+print (len(a[0]))
+
+#calculate one_norm value and sort documents
+one_norm = []
+doc_sort = []
+for i in range(len(text_files)):
+	one_norm.append(sum(a[i]))
+	doc_sort.append(Doc(text_files[i], one_norm[i], a[i]))
+doc_sort.sort()
+
+#partitioning
+group = []
+group_used = []
+for i in range(0, len(doc_sort), 3):
+	group.append(Group(doc_sort[i:i+3]))
+	group_used.append(Group(doc_sort[i:i+3]))
+
+#subgroup	
+for i in range(len(group)):
+	list_of_subgroup = []
+	for j in range(i+1):
+		subgroup = []
+		for k in range((len(group[i].file_list))):
+			if j != i:
+				#print (Tresh / max(group[i].file_list[k].tf_idf))
+				#print ("kkkkkk")
+				#print (group[j].file_list[2].one_norm)
+				if Tresh / max(group[i].file_list[k].tf_idf) >= group[j].file_list[2].one_norm \
+				and Tresh / max(group[i].file_list[k].tf_idf) < group[j+1].file_list[2].one_norm :
+					subgroup.append(group[i].file_list[k])
+					group_used[i].file_list.remove(group[i].file_list[k])					
+		if j == i:
+			for l in range(len(group_used[i].file_list)):
+				subgroup.append(group_used[i].file_list[l])
+		list_of_subgroup.append(subgroup)
+	group[i].setSubgroup(list_of_subgroup)
+print (len(group[1].subgroup[1]))
+
+#calculate d_max for each partition
+for i in range(len(group)):
+	d_max = []
+	for j in range(len(group[i].file_list[0].tf_idf)):
+		one_weight = []
+		for k in range(len(group[i].file_list)):			
+			one_weight.append(group[i].file_list[k].tf_idf[j])
+		d_max.append(max(one_weight))
+	group[i].setMaxWeight(d_max)
+	
+#get dissimilar partitions
+for i in range(len(group)):
+	for j in range(i):
+		prod = sum(list(map(lambda args: args[0]*args[1], zip(group[i].maxweight, group[j].maxweight))))
+		print (prod)
+		
+		
+	
+
+	
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+#print (tfidf_matrix[0])
+#print (a[0][3])
+#print ("\n")
+#print ("\n")
+#print ("\n")
+#print ("**********Vocabulary**********")
+#print ("\n")
+#print (tfidf_vectorizer.vocabulary_)
+#print ("\n")
+#print ("**********Vocabulary*********")
+#print ("\n")
+#print ("\n")
+#print (tfidf_matrix)
+#print ("*******************")
+#print (tfidf_matrix.shape)
+
+

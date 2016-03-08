@@ -1,0 +1,44 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sys import argv
+import math
+import glob
+
+#read in documents
+text_files = []
+for filename in glob.glob(r'E:\python\*.html'):
+	text_files.append(filename)
+	print (filename)
+
+documents = [open(f, encoding="utf8").read() for f in text_files]
+
+#set stop_words
+tfidf_vectorizer = TfidfVectorizer(stop_words=set(['DOCTYPE', 'html', 'PUBLIC', 'head', 'meta', 'http', 'content', 'link', 'rel', 'href', 'title', 'style', 'type', 'import', 'media', 'script', 'javascript', 'src', 'body', 'div', 'class', 'id', 'name', 'a', 'h3', 'h1', 'h2', 'table', 'tr', 'td', 'p', 'small', 'span', 'b', 'font']))
+
+#get tf_idf matrix and transform to 2D list
+tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+a = tfidf_matrix.todense().tolist()
+
+#calculate one_norm value
+one_norm = []
+for i in range(len(text_files)):
+	one_norm.append(sum(a[i]))
+	print (one_norm[i])
+
+#print (tfidf_matrix[0])
+#print (a[0][3])
+#print ("\n")
+#print ("\n")
+#print ("\n")
+#print ("**********Vocabulary**********")
+#print ("\n")
+#print (tfidf_vectorizer.vocabulary_)
+#print ("\n")
+#print ("**********Vocabulary*********")
+#print ("\n")
+#print ("\n")
+#print (tfidf_matrix)
+#print ("*******************")
+#print (tfidf_matrix.shape)
+
+
