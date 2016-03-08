@@ -1,0 +1,12 @@
+for i in range(len(partition)):
+	disimilarPartition = []
+	for j in range(i):
+		inner_product = 0;
+		for k in range(len(partition[i].max_weight)):
+			for l in range(len(partition[j].max_weight)):
+				if partition[i].max_weight[k][0] == partition[j].max_weight[l][0]:
+					inner_product += float(partition[i].max_weight[k][1])*float(partition[j].max_weight[l][1])
+		print(inner_product)
+		if inner_product <= Tresh:
+			disimilarPartition.append(partition[j])
+	partition[i].setDisimilarPartition(disimilarPartition)
