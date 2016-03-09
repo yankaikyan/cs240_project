@@ -4,6 +4,7 @@ from par_sim import partition_similarity
 from pyspark import SparkContext
 from pro1 import Doc
 from pro2 import Group
+from sim_self import self_similarity
 Tresh = 0.6
 
 #store tf_idf
@@ -50,8 +51,8 @@ doc_sort.sort()
 partition = []
 partition_used = []
 for i in range(0, len(doc_sort), 3):
-	partition.append(Group(doc_sort[i:i+3]))
-	partition_used.append(Group(doc_sort[i:i+3]))
+	partition.append(Group(i/3, doc_sort[i:i+3]))
+	partition_used.append(Group(i/3, doc_sort[i:i+3]))
 	
 #subgroup	
 for i in range(len(partition)):
@@ -103,14 +104,15 @@ for i in range(len(partition)):
         del counts.collect() [:]
     self_rdd = sc.parallelize(self)
     similar_rdd = sc.parallelize(similar)
-
 print similar_rdd.collect()
 print self_rdd.collect() 
-#print self_rdd.join(similar_rdd).collect()
-for (node, weight) in partition_similarity(similar_rdd.join(similar_rdd)).compare():
-    print node, weight
-
-#print rdd.join(rdd2).collect()
+b = similar_rdd.join(self_rdd)
+a = partition_similarity(b).compare()
+c = self_similarity(self_rdd).compare()
+for i in range(len(a.collect())):
+    print a.collect()[i]
+for i in range(len(c.collect())):
+    print c.collect()[i]
 
 
 

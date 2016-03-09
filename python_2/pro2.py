@@ -1,6 +1,7 @@
 #define group class
 class Group:
-    def __init__(self, file_list):
+    def __init__(self, name, file_list):
+	self.name = name
         self.file_list = file_list
     def setSubgroup(self, subgroup):
         self.subgroup = subgroup

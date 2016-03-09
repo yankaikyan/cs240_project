@@ -1,9 +1,11 @@
 0.184900070365
 0.462764106298
 0.321961062521
-[('1', <pro2.Group instance at 0x28193f8>), ('2', <pro2.Group instance at 0x29ed200>), ('2', <pro2.Group instance at 0x29e8f80>)]
-[('0', <pro2.Group instance at 0x28193f8>), ('1', <pro2.Group instance at 0x29ed200>), ('2', <pro2.Group instance at 0x29e8f80>)]
-Traceback (most recent call last):
-  File "/home/longfeng/project/python/pro.py", line 110, in <module>
-    for (node, weight) in partition_similarity(similar_rdd.join(similar_rdd)).compare():
-TypeError: 'PipelinedRDD' object is not iterable
+[('1', <pro2.Group instance at 0x1f654d0>), ('2', <pro2.Group instance at 0x1f654d0>), ('2', <pro2.Group instance at 0x1f65638>)]
+[('0', <pro2.Group instance at 0x1f654d0>), ('1', <pro2.Group instance at 0x1f65680>), ('2', <pro2.Group instance at 0x1f65758>)]
+[]
+[]
+[]
+[(4, 3), (7, 3), (7, 4)]
+[(2, 5), (6, 5), (6, 2)]
+[(1, 0), (8, 0), (8, 1)]
