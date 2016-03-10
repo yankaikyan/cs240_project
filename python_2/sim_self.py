@@ -14,7 +14,7 @@ class self_similarity(object):
 
         def similarity(line):
   	      	
-	    
+#            print "now enter self comparison"   
 	    #documents similarity
        	    files = []	
                 
@@ -26,9 +26,9 @@ class self_similarity(object):
             
             for i in range(len(partition_i.file_list)):
             	disimilarPartition = []
-                print ("******")
-                print (partition_i.file_list[i].name)
-                print ("&&&&&&")
+#                print ("******")
+#                print (partition_i.file_list[i].name)
+#                print ("&&&&&&")
             	for j in range(i):
             		inner_product = 0;
             		for k in range(len(partition_i.file_list[i].tf_idf)):
@@ -36,7 +36,7 @@ class self_similarity(object):
             				if partition_i.file_list[i].tf_idf[k][0] == partition_i.file_list[j].tf_idf[l][0]:
             					inner_product += float(partition_i.file_list[i].tf_idf[k][1])*float(partition_i.file_list[j].tf_idf[l][1])
             		#print(inner_product)
-            		if inner_product <= Tresh:
+            		if inner_product >= Tresh:
             			files.append((partition_i.file_list[i].name, partition_i.file_list[j].name))         
             return files
         output = input_rdd.map(similarity)   

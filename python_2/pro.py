@@ -5,10 +5,16 @@ from pyspark import SparkContext
 from pro1 import Doc
 from pro2 import Group
 from sim_self import self_similarity
+from datetime import datetime
+print str(datetime.now())
+
+
 Tresh = 0.6
 
+nop = 1000
+
 #store tf_idf
-documents = open("110.txt", 'r')
+documents = open("./Data/part10000.txt", 'r')
 line = documents.readline()
 line_count = 0
 while line !='':
@@ -16,7 +22,7 @@ while line !='':
 	line = documents.readline()
 documents.close()
 
-documents = open("110.txt", 'r')
+documents = open("./Data/part10000.txt", 'r')
 line = documents.readline()
 t = 0
 data = [[] for row in range(line_count)]
@@ -50,9 +56,9 @@ doc_sort.sort()
 #partitioning
 partition = []
 partition_used = []
-for i in range(0, len(doc_sort), 3):
-	partition.append(Group(i/3, doc_sort[i:i+3]))
-	partition_used.append(Group(i/3, doc_sort[i:i+3]))
+for i in range(0, len(doc_sort), nop):
+	partition.append(Group(i/nop, doc_sort[i:i+nop]))
+	partition_used.append(Group(i/nop, doc_sort[i:i+nop]))
 	
 #subgroup	
 for i in range(len(partition)):
@@ -90,7 +96,14 @@ self = []
 for i in range(len(partition)):
     self.append((str(i),partition[i]))
     for j in range(i):
-        i_j = partition[i].maxweight + partition[j].maxweight
+#        i_j = partition[i].maxweight + partition[j].maxweight
+       
+        sum  = 0
+        for k in range(len(partition[i].maxweight)):
+            for l in range(len(partition[j].maxweight)):
+                if partition[i].maxweight[k][0] == partition[j].maxweight[l][0]:
+                    sum = sum + partition[i].maxweight[k][1] * partition[j].maxweight[l][1]
+        """
         input_rdd = sc.parallelize(i_j)
         counts = input_rdd.reduceByKey(lambda x, y: x*y)
         sum = 0
@@ -98,22 +111,29 @@ for i in range(len(partition)):
             if counts.collect()[k] not in i_j:
                 sum = sum + counts.collect()[k][1]
         print sum
-        if sum <= Tresh:
+        """
+        if sum >= Tresh:
             similar.append((str(i),partition[j]))
-        del i_j [:]
-        del counts.collect() [:]
+#        del i_j [:]
+#        del counts.collect() [:]
     self_rdd = sc.parallelize(self)
     similar_rdd = sc.parallelize(similar)
-print similar_rdd.collect()
-print self_rdd.collect() 
+#print similar_rdd.collect()
+#print self_rdd.collect() 
 b = similar_rdd.join(self_rdd)
-a = partition_similarity(b).compare()
-c = self_similarity(self_rdd).compare()
-for i in range(len(a.collect())):
-    print a.collect()[i]
-for i in range(len(c.collect())):
-    print c.collect()[i]
+a = partition_similarity(b).compare().collect()
+c = self_similarity(self_rdd).compare().collect()
+#for i in range(len(a.collect())):
+#    print a.collect()[i]
+#for i in range(len(c.collect())):
+#    print c.collect()[i]
+print "now print"
 
+#print c
+
+#print a
+
+print str(datetime.now())
 
 
 

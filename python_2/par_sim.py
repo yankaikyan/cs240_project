@@ -14,7 +14,7 @@ class partition_similarity(object):
 
         def similarity(line):
   	      	
-	    
+#            print "now enter partitions comparison"	    
 	    #documents similarity
        	    files = []	
                 
@@ -63,26 +63,48 @@ class partition_similarity(object):
                         for p in range(len(partition_j.file_list)):
                             rj = partition_j.file_list[p].one_norm
                             score = [0]*len(partition_i.subgroup[o])
-                            store_key = []
                             for r in range(len(partition_i.subgroup[o])):
-    	    		        for s in range(len(partition_i.subgroup[o][r].tf_idf)):
+    	    		        store_key = []
+                                for s in range(len(partition_i.subgroup[o][r].tf_idf)):
     	    			    store_key.append(partition_i.subgroup[o][r].tf_idf[s][0])
-    	    		for q in range(len(partition_j.file_list[p].tf_idf)):
-    	    		    wj = 0
-    	    		    if partition_j.file_list[p].tf_idf[q][0] in store_key:
-    	    		        if score[r] + max(partition_i.subgroup[o][r].value)*rj < Tresh:
-    	    			    print "%s is dissimilar to %s", partition_j.file_list[p].name, partition_i.subgroup[o][r].name
-    	    		        else:
-    	    		            for s in range(len(partition_i.subgroup[o][r].tf_idf)):
-    	    			        if partition_j.file_list[p].tf_idf[q][0] == partition_i.subgroup[o][r].tf_idf[s][0]:
-    	    				    score[r] = score[r] + partition_i.subgroup[o][r].tf_idf[s][1]*partition_j.file_list[p].tf_idf[q][1]
-    	    				    wj = partition_j.file_list[p].tf_idf[q][1]
-    	    		    rj = rj - wj
-    	    		for t in range(len(partition_i.subgroup[o])):
-    	    		    if score[t] >= Tresh:
-    	    		        print "%s is similar to %s", partition_i.subgroup[o].file_list[t].name, partition_j.file_list[p].name
-				files.append((partition_i.subgroup[o].file_list[t].name, partition_j.file_list[p].name))
+    	    		        for q in range(len(partition_j.file_list[p].tf_idf)):
+    	    		            wj = 0
+    	    		            if partition_j.file_list[p].tf_idf[q][0] in store_key:
+    	    		                if score[r] + max(partition_i.subgroup[o][r].value)*rj < Tresh:
+                                            break
+    	    		                else:
+    	    		                    for s in range(len(partition_i.subgroup[o][r].tf_idf)):
+    	    			                if partition_j.file_list[p].tf_idf[q][0] == partition_i.subgroup[o][r].tf_idf[s][0]:
+    	    				            score[r] = score[r] + partition_i.subgroup[o][r].tf_idf[s][1]*partition_j.file_list[p].tf_idf[q][1]
+    	    				            wj = partition_j.file_list[p].tf_idf[q][1]
+    	    		        rj = rj - wj
+    	    		    for t in range(len(partition_i.subgroup[o])):
+    	    		        if score[t] >= Tresh:
+				    files.append((partition_i.subgroup[o][t].name, partition_j.file_list[p].name))
             
+                else:
+                    for p in range(len(partition_j.file_list)):
+                            rj = partition_j.file_list[p].one_norm
+                            score = [0]*len(partition_i.file_list)
+                            for r in range(len(partition_i.subgroup[o])):
+                                store_key = []
+                                for s in range(len(partition_i.subgroup[o][r].tf_idf)):
+                                    store_key.append(partition_i.subgroup[o][r].tf_idf[s][0])
+                                for q in range(len(partition_j.file_list[p].tf_idf)):
+                                    wj = 0
+                                    if partition_j.file_list[p].tf_idf[q][0] in store_key:
+                                        if score[r] + max(partition_i.subgroup[o][r].value)*rj < Tresh:
+                                            break
+                                        else:
+                                            for s in range(len(partition_i.subgroup[o][r].tf_idf)):
+                                                if partition_j.file_list[p].tf_idf[q][0] == partition_i.subgroup[o][r].tf_idf[s][0]:
+                                                    score[r] = score[r] + partition_i.subgroup[o][r].tf_idf[s][1]*partition_j.file_list[p].tf_idf[q][1]
+                                                    wj = partition_j.file_list[p].tf_idf[q][1]
+                                rj = rj - wj
+                            for t in range(len(partition_i.subgroup[o])):
+                                if score[t] >= Tresh:
+                                    files.append((partition_i.subgroup[o][t].name, partition_j.file_list[p].name)) 
+        
             #files.append((1, 1))
             return files
         output = input_rdd.map(similarity) 
